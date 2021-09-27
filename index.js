@@ -92,6 +92,7 @@ app.get("/publications/isbn/:isbn",(req,res)=>{
 })
 
 //------------------------------------POST() method-----------------------------------------------------
+//We are adding new data in this 
 
 //  http://localhost:3000/book      (not books, it used in get())
 app.post("/book", (req, res) => {
@@ -111,6 +112,98 @@ app.post("/author", (req,res)=>{
 app.post("/publication",(req,res)=>{
     db.publications.push(req.body);
     return res.json(db.publications);
+})
+
+//  ===============================  PUT() mehtod =================
+// We are editing existing data(not adding new ones)
+
+//  http://localhost:3000/book-update/12345ONE
+app.put("/book-update/:isbn", (req, res) => {
+    console.log(req.body);
+    console.log(req.params);
+    const {isbn} = req.params;
+    db.books.forEach((book) => {
+        if(book.ISBN === isbn) {
+            console.log({...book, ...req.body})
+            return {...book, ...req.body};
+        }
+        return book;
+    })
+    return res.json(db.books);
+});
+
+// localhost:3000/author-update/1
+app.put("/author-update/:id", (req, res) => {
+    const {id} = req.params;
+    db.books.forEach((author) => {
+        if(author.id === id) {
+            console.log({...author, ...req.body})
+            return {...author, ...req.body};
+        }
+        return author;
+    })
+    return res.json(db.authors);
+});
+
+// localhost:3000/publication-update/1
+app.put("/publication-update/:id", (req, res) => {
+    const {id} = req.params;
+    db.publications.forEach((publication) => {
+        if(publication.id === id) {
+            console.log({...publication, ...req.body})
+            return {...publication, ...req.body};
+        }
+        return publication;
+    })
+    return res.json(db.publications);
+});
+
+// --------------------------- DELETE() method -----------------
+// localhost:3000/book-delete/12345ONE
+app.delete("/book-delete/:isbn",(req,res)=>{
+    const {isbn}= req.params;
+    const afterDeleteBooks=db.books.filter((book)=>book.ISBN!==isbn)
+    console.log(afterDeleteBooks)
+    db.books=afterDeleteBooks;
+    return res.json(db.books);
+})
+
+// localhost:3000/book-author-delete/12345ONE/1
+app.delete("/book-author-delete/:isbn/:id",(req,res)=>{
+    let {isbn,id}= req.params;
+    id=Number(id);
+    db.books.forEach((book)=>
+    {
+        if(book.ISBN === isbn){
+        if(!book.authors.includes(id)){
+            return;
+        }
+        book.authors = book.authors.filter((author)=>author!==id);
+        return book;
+        }
+        return book;
+    })
+    console.log(db.books);
+    return res.json(db.books);
+})
+
+// localhost:3000/author-book-delete/1/12345ONE
+app.delete("/author-book-delete/:isbn/:id",(req,res)=>{
+    let {id,isbn}= req.params;
+    id=Number(id);
+    db.books.forEach((book)=>
+    {
+        if(book.id === id){
+        if(!authors.book.includes(id)){
+            return;
+        }
+        book.authors = book.authors.filter((author)=>author!==id);
+        return book;
+        }
+        return book;
+    })
+    console.log(db.books);
+    return res.json(db.books);
 })
 
 app.listen(3000,()=>{
