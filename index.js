@@ -1,6 +1,7 @@
 // Main Backend file
 
 const db = require("./database/index.js") //get the index.js file
+const mongoose = require('mongoose');  //imported mongoose module
 // console.log(db);
 // console.log(db.books)                  
 // console.log(db.authors)                  
@@ -9,6 +10,37 @@ const db = require("./database/index.js") //get the index.js file
 const express=require("express"); //gets the express framework(is used everytime the express framework is needed)
 const app=express();
 app.use(express.json());
+
+// code from MongoDB itself
+const { MongoClient } = require('mongodb');
+const uri = "mongodb+srv://Anvith_Dev:KqWfh8Is7Npg9gDV@cluster0.s7szx.mongodb.net/BOOK-COMPANY?retryWrites=true&w=majority";
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+// console.log(client)
+client.connect(err => {
+  const book_collection = client.db("BOOK-COMPANY").collection("books").findOne({ISBN:"1234Three"});  //findOne() is an method from MongoDB
+  book_collection.then((data)=>console.log(data)).catch((err)=>console.log(err));
+  // perform actions on the collection object
+});
+client.close();
+
+// =======================================  Alternate method for above code  =======================================
+// async function main() {
+//     const uri = "mongodb+srv://nikhil_agarwal:p5nfHZEoRnTA2VGb@cluster0.arwlh.mongodb.net/book-company?retryWrites=true&w=majority";
+//     const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+//     try {
+//         await client.connect();
+//         const result = await client.db("book-company").collection("books").findOne({ISBN: "1234Three"});
+//         console.log(result);
+//         // await listDatabases(client);
+//     }
+//     catch(err) {
+//         console.log(err);
+//     }
+//     finally {
+//         await client.close();
+//     }
+// }
+// main();
 
 //   localhost:3000/
 app.get("/",(req,res)=>{
